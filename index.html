@@ -73,13 +73,13 @@
 </head>
 <body class="bg-black text-white min-h-screen flex flex-col items-center justify-center">
   <!-- Password Protection -->
-  <script>
+  <!-- <script>
     var password = prompt("Enter the password to access DiracTrack:");
     if (password !== "QuantumHODL") {
       alert("Incorrect password! Access denied.");
       window.location = "https://www.google.com"; // Redirect on wrong password
     }
-  </script>
+  </script> -->
 
   <!-- Header -->
   <header class="w-full max-w-4xl mx-auto p-6 text-center">
@@ -89,9 +89,26 @@
 
   <!-- Main Content -->
   <main class="w-full max-w-4xl mx-auto p-6 space-y-8">
-    <!-- Trade Submission Form -->
+    <!-- Leaderboard -->
     <section class="holo-panel p-6 rounded-lg">
-      <h2 class="text-2xl font-bold neon-text mb-4">Submit Your Trade</h2>
+      <h2 class="text-2xl font-bold neon-text mb-4">Leaderboard</h2>
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-cyan-500">
+            <th class="py-2">Rank</th>
+            <th class="py-2">Username</th>
+            <th class="py-2">Total Profit (USD)</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </section>
+
+        <!-- Trade Submission Form -->
+    <section class="holo-panel p-6 rounded-lg">
+      <h2 class="text-2xl font-bold neon-text mb-4">Submit Your Trade History</h2>
       <form id="tradeForm" class="space-y-4">
         <div>
           <label for="username" class="block text-sm font-medium">Crypto-Bro Username</label>
@@ -120,23 +137,6 @@
         <p id="profitLoss" class="text-lg"></p>
         <p id="roi" class="text-lg"></p>
       </div>
-    </section>
-
-    <!-- Leaderboard -->
-    <section class="holo-panel p-6 rounded-lg">
-      <h2 class="text-2xl font-bold neon-text mb-4">Leaderboard</h2>
-      <table class="w-full text-left">
-        <thead>
-          <tr class="border-b border-cyan-500">
-            <th class="py-2">Rank</th>
-            <th class="py-2">Username</th>
-            <th class="py-2">Total Profit (USD)</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboard">
-          <!-- Populated by JavaScript -->
-        </tbody>
-      </table>
     </section>
 
     <!-- Subscription Plans (Mockup) -->
