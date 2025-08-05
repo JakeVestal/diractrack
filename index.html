@@ -1,0 +1,224 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiracTrack - Crypto Metrics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: url('https://images.unsplash.com/photo-1620283198799-2d7e90ed9d66?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .sci-fi-button {
+      background: linear-gradient(45deg, #00f7ff, #00ff88);
+      border: 2px solid #00f7ff;
+      box-shadow: 0 0 20px #00f7ff, 0 0 40px rgba(0, 247, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+    .sci-fi-button:hover {
+      box-shadow: 0 0 30px #00f7ff, 0 0 60px rgba(0, 247, 255, 0.8);
+      transform: scale(1.05);
+    }
+    .holo-panel {
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #00f7ff;
+      box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+    }
+    .neon-text {
+      text-shadow: 0 0 10px #00f7ff, 0 0 20px #00ff88;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center">
+  <!-- Password Protection -->
+  <script>
+    var password = prompt("Enter the password to access DiracTrack:");
+    if (password !== "QuantumHODL") {
+      alert("Incorrect password! Access denied.");
+      window.location = "https://www.google.com"; // Redirect on wrong password
+    }
+  </script>
+
+  <!-- Header -->
+  <header class="w-full max-w-4xl mx-auto p-6 text-center">
+    <h1 class="text-4xl md:text-6xl font-bold neon-text">DiracTrack</h1>
+    <p class="text-lg md:text-xl mt-2 opacity-80">Quantum Crypto Metrics & Leaderboard</p>
+  </header>
+
+  <!-- Main Content -->
+  <main class="w-full max-w-4xl mx-auto p-6 space-y-8">
+    <!-- Trade Submission Form -->
+    <section class="holo-panel p-6 rounded-lg">
+      <h2 class="text-2xl font-bold neon-text mb-4">Submit Your Trade</h2>
+      <form id="tradeForm" class="space-y-4">
+        <div>
+          <label for="username" class="block text-sm font-medium">Crypto-Bro Username</label>
+          <input type="text" id="username" class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="e.g., HODLKing69" required>
+        </div>
+        <div>
+          <label for="coin" class="block text-sm font-medium">Coin</label>
+          <input type="text" id="coin" class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="e.g., BTC" required>
+        </div>
+        <div>
+          <label for="amount" class="block text-sm font-medium">Amount</label>
+          <input type="number" id="amount" class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="e.g., 0.5" step="0.0001" required>
+        </div>
+        <div>
+          <label for="buyPrice" class="block text-sm font-medium">Buy Price (USD)</label>
+          <input type="number" id="buyPrice" class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="e.g., 50000" step="0.01" required>
+        </div>
+        <div>
+          <label for="currentPrice" class="block text-sm font-medium">Current Price (USD)</label>
+          <input type="number" id="currentPrice" class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="e.g., 60000" step="0.01" required>
+        </div>
+        <button type="submit" class="sci-fi-button py-2 px-4 rounded font-bold text-black">Submit Trade</button>
+      </form>
+      <div id="metrics" class="mt-4 hidden">
+        <h3 class="text-xl font-bold neon-text">Trade Metrics</h3>
+        <p id="profitLoss" class="text-lg"></p>
+        <p id="roi" class="text-lg"></p>
+      </div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section class="holo-panel p-6 rounded-lg">
+      <h2 class="text-2xl font-bold neon-text mb-4">Leaderboard</h2>
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-cyan-500">
+            <th class="py-2">Rank</th>
+            <th class="py-2">Username</th>
+            <th class="py-2">Total Profit (USD)</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Subscription Plans (Mockup) -->
+    <section class="holo-panel p-6 rounded-lg">
+      <h2 class="text-2xl font-bold neon-text mb-4">Subscription Plans</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-gray-900 border border-cyan-500 rounded">
+          <h3 class="text-xl font-bold">Basic</h3>
+          <p class="text-sm opacity-80">Track up to 5 trades/month</p>
+          <p class="text-lg font-bold mt-2">$9.99/month</p>
+          <button class="sci-fi-button py-2 px-4 mt-4 rounded font-bold text-black">Subscribe</button>
+        </div>
+        <div class="p-4 bg-gray-900 border border-cyan-500 rounded">
+          <h3 class="text-xl font-bold">Pro</h3>
+          <p class="text-sm opacity-80">Unlimited trades, premium analytics</p>
+          <p class="text-lg font-bold mt-2">$29.99/month</p>
+          <button class="sci-fi-button py-2 px-4 mt-4 rounded font-bold text-black">Subscribe</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JavaScript for Trade Calculations and Leaderboard -->
+  <script>
+    // Mock leaderboard data with crypto-bro usernames
+    let leaderboardData = [
+      { username: "HODLKing69", profit: 15000 },
+      { username: "MoonLad420", profit: 12000 },
+      { username: "CryptoWarlordX", profit: 8000 },
+      { username: "ShillcoinSlayer", profit: 5000 },
+      { username: "DeFiDegen777", profit: 2000 }
+    ];
+
+    // Update leaderboard
+    function updateLeaderboard() {
+      const tbody = document.getElementById("leaderboard");
+      tbody.innerHTML = "";
+      leaderboardData.forEach((entry, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="py-2">${index + 1}</td>
+          <td class="py-2">${entry.username}</td>
+          <td class="py-2">$${entry.profit.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Handle trade submission
+    document.getElementById("tradeForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const buyPrice = parseFloat(document.getElementById("buyPrice").value);
+      const currentPrice = parseFloat(document.getElementById("currentPrice").value);
+
+      // Calculate metrics
+      const profitLoss = (currentPrice - buyPrice) * amount;
+      const roi = ((currentPrice - buyPrice) / buyPrice) * 100;
+
+      // Display metrics
+      const metricsDiv = document.getElementById("metrics");
+      metricsDiv.classList.remove("hidden");
+      document.getElementById("profitLoss").textContent = `Profit/Loss: $${profitLoss.toFixed(2)}`;
+      document.getElementById("roi").textContent = `ROI: ${roi.toFixed(2)}%`;
+
+      // Update leaderboard
+      const existingUser = leaderboardData.find(entry => entry.username === username);
+      if (existingUser) {
+        existingUser.profit += profitLoss;
+      } else {
+        leaderboardData.push({ username, profit: profitLoss });
+      }
+      leaderboardData.sort((a, b) => b.profit - a.profit);
+      updateLeaderboard();
+
+      // Reset form
+      this.reset();
+    });
+
+    // Initial leaderboard render
+    updateLeaderboard();
+  </script>
+</body>
+</html>
