@@ -73,13 +73,30 @@
 </head>
 <body class="bg-black text-white min-h-screen flex flex-col items-center justify-center">
   <!-- Password Protection -->
-  <!-- <script>
-    var password = prompt("Enter the password to access DiracTrack:");
-    if (password !== "QuantumHODL") {
-      alert("Incorrect password! Access denied.");
-      window.location = "https://www.google.com"; // Redirect on wrong password
-    }
-  </script> -->
+  <script>
+      var password = prompt("Enter the password to access DiracTrack:");
+      fetch("/.netlify/functions/checkPassword", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: password }),
+      })
+          .then((response) => response.json())
+          .then((data) => {
+              if (data.isValid) {
+                  // Password correct, allow access (stay on page)
+                  alert("Access granted!");
+              } else {
+                  alert("Incorrect password! Access denied.");
+                  // Redirect on wrong password
+                  window.location = "https://www.google.com";
+              }
+          })
+          .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred. Please try again.");
+              window.location = "https://www.google.com"; // Redirect on error
+          });
+  </script>
 
   <!-- Header -->
   <header class="w-full max-w-4xl mx-auto p-6 text-center">
